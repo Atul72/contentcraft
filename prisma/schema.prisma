@@ -27,6 +27,8 @@ model User {
   image         String?
   role          UserRole @default(USER)
   accounts      Account[]
+  points        Int       @default(100)
+  savedContent SavedContent[]
   @@map("users")
 }
 
@@ -48,4 +50,15 @@ model Account {
  
   @@unique([provider, providerAccountId])
   @@map("accounts")
+}
+
+model SavedContent {
+  id String @id @default(cuid())
+  userId String @map("user_id")
+  contentType String
+  prompt String
+  content String
+  createdAt DateTime @default(now())
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@map("saved_content")
 }
