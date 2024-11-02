@@ -78,5 +78,5 @@ export default function GeneratePage() {
 
   // TODO: Fetch history from database and set it to history state
 
-  return <></>;
+  return <>{user?.points}</>;
 }

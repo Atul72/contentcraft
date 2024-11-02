@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { CheckIcon } from "lucide-react";
 import { useUser } from "@/lib/user-client";
-
 import { loadStripe } from "@stripe/stripe-js";
 
 const pricingPlans = [
@@ -48,6 +47,30 @@ export default function Pricing() {
 
   const handleSubscribe = async (priceId: string) => {
     if (!user) return;
+
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/create-checkout-session", {
+        method: "POST",
+        body: JSON.stringify({ priceId, userId: user.id }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData || "Failed to create checkout session");
+      }
+
+      const { sessionId } = await response.json();
+      const stripe = await loadStripe(process.env.STRIPE_PUBLISHABLE_KEY!);
+      if (!stripe) {
+        throw new Error("Stripe not loaded");
+      }
+      await stripe.redirectToCheckout({ sessionId });
+    } catch (error) {
+      console.error("Error creating checkout session", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

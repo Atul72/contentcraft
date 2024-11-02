@@ -27,8 +27,10 @@ model User {
   image         String?
   role          UserRole @default(USER)
   accounts      Account[]
+  stripeCustomerId String? @map("stripe_customer_id")
   points        Int       @default(100)
-  savedContent SavedContent[]
+  generatedContent GeneratedContent[]
+  subscription Subscription?
   @@map("users")
 }
 
@@ -52,13 +54,28 @@ model Account {
   @@map("accounts")
 }
 
-model SavedContent {
+model Subscription {
+  id String @id @default(cuid())
+  userId String @map("user_id")
+  stripeSubscriptionId String @map("stripe_subscription_id")
+  plan String
+  status String
+  currentPeriodStart DateTime @map("current_period_start")
+  currentPeriodEnd DateTime @map("current_period_end")
+  cancelAtPeriodEnd Boolean @default(false) @map("cancel_at_period_end")
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([userId])
+}
+
+
+model GeneratedContent {
   id String @id @default(cuid())
   userId String @map("user_id")
   contentType String
   prompt String
   content String
   createdAt DateTime @default(now())
+  
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  @@map("saved_content")
+  @@map("generated_content")
 }
