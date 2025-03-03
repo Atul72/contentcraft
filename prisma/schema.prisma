@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -27,10 +21,9 @@ model User {
   image         String?
   role          UserRole @default(USER)
   accounts      Account[]
-  stripeCustomerId String? @map("stripe_customer_id")
   points        Int       @default(100)
   generatedContent GeneratedContent[]
-  subscription Subscription?
+  payments Payments[]
   @@map("users")
 }
 
@@ -54,19 +47,15 @@ model Account {
   @@map("accounts")
 }
 
-model Subscription {
+model Payments {
   id String @id @default(cuid())
   userId String @map("user_id")
-  stripeSubscriptionId String @map("stripe_subscription_id")
-  plan String
-  status String
-  currentPeriodStart DateTime @map("current_period_start")
-  currentPeriodEnd DateTime @map("current_period_end")
-  cancelAtPeriodEnd Boolean @default(false) @map("cancel_at_period_end")
+  amount Int
+  status String @default("pending")
+  createdAt DateTime @default(now())
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  @@unique([userId])
+  @@map("payments")
 }
-
 
 model GeneratedContent {
   id String @id @default(cuid())

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useUser } from "@/lib/user-client";
@@ -78,5 +79,5 @@ export default function GeneratePage() {
 
   // TODO: Fetch history from database and set it to history state
 
-  return <>{user?.points}</>;
+  return <>{user?.email}</>;
 }

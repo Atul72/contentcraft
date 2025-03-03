@@ -18,7 +18,7 @@ export const {
     linkAccount: async ({ user }) => {
       await db.user.update({
         where: { id: user.id },
-        data: { emailVerified: new Date(), stripeCustomerId: user.id },
+        data: { emailVerified: new Date(), razorpayCustomerId: user.id },
       });
     },
   },
@@ -29,11 +29,11 @@ export const {
       }
 
       if (token.role && session.user) {
-        (session.user as any).role = token.role as "ADMIN" | "USER";
+        session.user.role = token.role as "ADMIN" | "USER";
       }
 
       if (session.user) {
-        (session.user as any).points = token.points;
+        session.user.points = token.points as number;
       }
 
       return session;

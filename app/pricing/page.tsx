@@ -1,10 +1,12 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { CheckIcon } from "lucide-react";
 import { useUser } from "@/lib/user-client";
-import { loadStripe } from "@stripe/stripe-js";
+import Modal from "@/components/modal";
+import FakePaymentUi from "@/components/fake-payment";
 
 const pricingPlans = [
   {
@@ -42,37 +44,6 @@ const pricingPlans = [
 ];
 
 export default function Pricing() {
-  const [isLoading, setIsLoading] = useState(false);
-  const user = useUser();
-
-  const handleSubscribe = async (priceId: string) => {
-    if (!user) return;
-
-    setIsLoading(true);
-    try {
-      const response = await fetch("/api/create-checkout-session", {
-        method: "POST",
-        body: JSON.stringify({ priceId, userId: user.id }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData || "Failed to create checkout session");
-      }
-
-      const { sessionId } = await response.json();
-      const stripe = await loadStripe(process.env.STRIPE_PUBLISHABLE_KEY!);
-      if (!stripe) {
-        throw new Error("Stripe not loaded");
-      }
-      await stripe.redirectToCheckout({ sessionId });
-    } catch (error) {
-      console.error("Error creating checkout session", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 text-orange-500">
       <main className="container mx-auto px-8 py-20">
@@ -105,13 +76,14 @@ export default function Pricing() {
                   </li>
                 ))}
               </ul>
-              <Button
-                onClick={() => plan.priceId && handleSubscribe(plan.priceId)}
-                disabled={isLoading || !plan.priceId}
-                className="w-full bg-gray-300 text-orange-600 hover:bg-gray-400"
-              >
-                {isLoading ? "Processing..." : "Choose Plan"}
-              </Button>
+              <Modal>
+                <Modal.Open opens="choose-plan">
+                  <Button>Choose Plan</Button>
+                </Modal.Open>
+                <Modal.Window name="choose-plan">
+                  <FakePaymentUi />
+                </Modal.Window>
+              </Modal>
             </div>
           ))}
         </div>
