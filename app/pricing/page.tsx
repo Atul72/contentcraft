@@ -81,7 +81,7 @@ export default function Pricing() {
                   <Button>Choose Plan</Button>
                 </Modal.Open>
                 <Modal.Window name="choose-plan">
-                  <FakePaymentUi />
+                  <FakePaymentUi price={Number(plan.price)} />
                 </Modal.Window>
               </Modal>
             </div>

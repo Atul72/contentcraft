@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useTransition } from "react";
 import { CreditCard, Lock, Calendar, CheckCircle } from "lucide-react";
+import { createPayment } from "@/action/payment";
 
-function FakePaymentUi() {
+function FakePaymentUi({ price }: { price: number }) {
   const [formData, setFormData] = useState({
     cardNumber: "",
     cardHolder: "",
@@ -14,8 +15,9 @@ function FakePaymentUi() {
     expiryDate: "",
     cvv: "",
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+
+  const [isPending, startTransition] = useTransition();
 
   const formatCardNumber = (value: string) => {
     const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
@@ -119,26 +121,19 @@ function FakePaymentUi() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (validateForm()) {
-      setIsSubmitting(true);
+    if (!validateForm()) return;
 
-      // Simulate payment processing
-      setTimeout(() => {
-        setIsSubmitting(false);
-        setIsSuccess(true);
-
-        // Reset form after success
-        setTimeout(() => {
-          setFormData({
-            cardNumber: "",
-            cardHolder: "",
-            expiryDate: "",
-            cvv: "",
-          });
-          setIsSuccess(false);
-        }, 3000);
-      }, 1500);
-    }
+    startTransition(() => {
+      createPayment({ price })
+        .then((res) => {
+          if (res.success) {
+            setIsSuccess(true);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    });
   };
 
   return (
@@ -187,6 +182,7 @@ function FakePaymentUi() {
                     onChange={handleChange}
                     placeholder="1234 5678 9012 3456"
                     maxLength={19}
+                    disabled={isPending}
                     className={`w-full pl-10 pr-4 py-3 border ${
                       errors.cardNumber ? "border-red-500" : "border-gray-300"
                     } rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition`}
@@ -214,6 +210,7 @@ function FakePaymentUi() {
                   value={formData.cardHolder}
                   onChange={handleChange}
                   placeholder="John Smith"
+                  disabled={isPending}
                   className={`w-full px-4 py-3 border ${
                     errors.cardHolder ? "border-red-500" : "border-gray-300"
                   } rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition`}
@@ -242,6 +239,7 @@ function FakePaymentUi() {
                       onChange={handleChange}
                       placeholder="MM/YY"
                       maxLength={5}
+                      disabled={isPending}
                       className={`w-full pl-10 pr-4 py-3 border ${
                         errors.expiryDate ? "border-red-500" : "border-gray-300"
                       } rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition`}
@@ -286,12 +284,12 @@ function FakePaymentUi() {
               <div className="pt-4">
                 <button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isPending}
                   className={`w-full py-3 px-4 bg-gradient-to-r from-orange-500 to-amber-600 text-white font-medium rounded-lg shadow-md hover:from-orange-600 hover:to-amber-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50 transition ${
-                    isSubmitting ? "opacity-70 cursor-not-allowed" : ""
+                    isPending ? "opacity-70 cursor-not-allowed" : ""
                   }`}
                 >
-                  {isSubmitting ? (
+                  {isPending ? (
                     <div className="flex items-center justify-center">
                       <svg
                         className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"

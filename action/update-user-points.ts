@@ -1,7 +1,9 @@
+"use server";
+
 import { db } from "@/lib/db";
 
 export const updateUserPoints = async (userId: string, points: number) => {
-  await db.user.update({
+  const updatedUser = await db.user.update({
     where: { id: userId },
     data: {
       points: {
@@ -9,4 +11,6 @@ export const updateUserPoints = async (userId: string, points: number) => {
       },
     },
   });
+
+  return updatedUser;
 };
