@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -80,38 +80,37 @@ export default function GenerateContent() {
     }
   }, []);
 
-  // TODO: Use react-quesy for real time updates
+  // TODO: Use react-query for real time updates
+  const fetchUserPoints = useCallback(async () => {
+    if (user?.id) {
+      // console.log("Fetching points for user:", user.id);
+      // const points = await getUserPoints(user.id);
+      // console.log("Fetched points:", points);
+      setUserPoints(user.points);
+      // if (user.points === 0) {
+      //   console.log("User has 0 points. Attempting to create/update user.");
+      //   const updatedUser = await createOrUpdateUser(
+      //     user.id,
+      //     user.email,
+      //     user.name || ""
+      //   );
+      //   console.log("Updated user:", updatedUser);
+      //   if (updatedUser) {
+      //     setUserPoints(updatedUser.points);
+      //   }
+      // }
+    }
+  }, [user?.id, user?.points]);
 
   useEffect(() => {
     if (!user) {
       router.push("/");
     } else if (user) {
       console.log("User loaded:", user);
-      // fetchUserPoints();
+      fetchUserPoints();
       // fetchContentHistory();
     }
-  }, [user, router]);
-
-  // const fetchUserPoints = async () => {
-  //   if (user?.id) {
-  //     // console.log("Fetching points for user:", user.id);
-  //     // const points = await getUserPoints(user.id);
-  //     // console.log("Fetched points:", points);
-  //     setUserPoints(user.points);
-  //     if (user.points === 0) {
-  //       console.log("User has 0 points. Attempting to create/update user.");
-  //       const updatedUser = await createOrUpdateUser(
-  //         user.id,
-  //         user.email,
-  //         user.name || ""
-  //       );
-  //       console.log("Updated user:", updatedUser);
-  //       if (updatedUser) {
-  //         setUserPoints(updatedUser.points);
-  //       }
-  //     }
-  //   }
-  // };
+  }, [user, router, fetchUserPoints]);
 
   // const fetchContentHistory = async () => {
   //   if (user?.id) {
@@ -252,7 +251,7 @@ export default function GenerateContent() {
 
   if (!user) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#0a0a0a]">
+      <div className="flex items-center justify-center min-h-screen bg-[#fa3333]">
         <div className="text-center bg-[#111111] p-8 rounded-lg shadow-lg">
           <h1 className="text-3xl font-bold text-white mb-4">
             Welcome to ThreadCraft AI
@@ -281,14 +280,14 @@ export default function GenerateContent() {
   };
 
   return (
-    <div className="bg-gradient-to-br from-gray-900 to-black min-h-screen text-white">
+    <div className="bg-gradient-to-br from-orange-500 to-amber-600 min-h-screen text-white">
       <div className="container mx-auto px-4 mb-8 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 mt-14 lg:grid-cols-3 gap-8">
           {/* Left sidebar - History */}
-          <div className="lg:col-span-1 bg-gray-800 rounded-2xl p-6 h-[calc(100vh-12rem)] overflow-y-auto">
+          <div className="lg:col-span-1 bg-amber-700 rounded-2xl p-6 h-[calc(100vh-12rem)] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-semibold text-blue-400">History</h2>
-              <Clock className="h-6 w-6 text-blue-400" />
+              <h2 className="text-2xl font-semibold text-white">History</h2>
+              <Clock className="h-6 w-6 text-white" />
             </div>
             <div className="space-y-4">
               {history.map((item) => (
@@ -326,32 +325,32 @@ export default function GenerateContent() {
           {/* Main content area */}
           <div className="lg:col-span-2 space-y-6">
             {/* Points display */}
-            <div className="bg-gray-800 p-6 rounded-2xl flex items-center justify-between">
+            <div className="bg-amber-700 p-6 rounded-2xl flex items-center justify-between">
               <div className="flex items-center">
                 <Zap className="h-8 w-8 text-yellow-400 mr-3" />
                 <div>
-                  <p className="text-sm text-gray-400">Available Points</p>
+                  <p className="text-sm text-white">Available Points</p>
                   <p className="text-2xl font-bold text-yellow-400">
                     {user?.points !== null ? user?.points : "Loading..."}
                   </p>
                 </div>
               </div>
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white text-sm py-2 px-4 rounded-full transition-colors">
+              <Button className="bg-amber-500 hover:bg-amber-600 text-white text-sm py-2 px-4 rounded-full transition-colors">
                 <Link href="/pricing">Get More Points</Link>
               </Button>
             </div>
 
             {/* Content generation form */}
-            <div className="bg-gray-800 p-6 rounded-2xl space-y-6">
+            <div className="bg-amber-700 p-6 rounded-2xl space-y-6">
               <div>
-                <label className="block text-sm font-medium mb-2 text-gray-300">
+                <label className="block text-sm font-medium mb-2 text-white">
                   Content Type
                 </label>
                 <Select
                   onValueChange={setContentType}
                   defaultValue={contentType}
                 >
-                  <SelectTrigger className="w-full bg-gray-700 border-none rounded-xl">
+                  <SelectTrigger className="w-full bg-amber-500 border-none rounded-xl">
                     <SelectValue placeholder="Select content type" />
                   </SelectTrigger>
                   <SelectContent>
@@ -378,7 +377,7 @@ export default function GenerateContent() {
               <div>
                 <label
                   htmlFor="prompt"
-                  className="block text-sm font-medium mb-2 text-gray-300"
+                  className="block text-sm font-medium mb-2 text-white"
                 >
                   Prompt
                 </label>
@@ -388,7 +387,7 @@ export default function GenerateContent() {
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
                   rows={4}
-                  className="w-full bg-gray-700 border-none rounded-xl resize-none"
+                  className="w-full bg-amber-500 border-none text-white rounded-xl resize-none"
                 />
               </div>
 
@@ -423,13 +422,13 @@ export default function GenerateContent() {
 
               <Button
                 onClick={handleGenerate}
-                // disabled={
-                //   isLoading ||
-                //   !prompt ||
-                //   userPoints === null ||
-                //   userPoints < POINTS_PER_GENERATION
-                // }
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl transition-colors"
+                disabled={
+                  isLoading ||
+                  !prompt ||
+                  userPoints === null ||
+                  userPoints < POINTS_PER_GENERATION
+                }
+                className="w-full bg-amber-500 hover:bg-amber-600 text-white py-3 rounded-xl transition-colors"
               >
                 {isLoading ? (
                   <>
