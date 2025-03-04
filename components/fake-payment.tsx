@@ -137,7 +137,7 @@ function FakePaymentUi({ price }: { price: number }) {
   };
 
   return (
-    <div className=" bg-gradient-to-br flex items-center justify-center p-4">
+    <div className=" bg-gradient-to-br flex items-center  justify-center p-4">
       <div className="w-full max-w-md">
         {isSuccess ? (
           <div className="bg-white rounded-xl shadow-lg p-8 text-center animate-fade-in">

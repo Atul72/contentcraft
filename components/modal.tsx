@@ -54,9 +54,9 @@ function Window({
   if (name !== openName) return null;
 
   return createPortal(
-    <div className="fixed top-0 left-0 w-full h-full backdrop-blur-sm">
+    <div className="fixed top-0 left-0 w-full h-full backdrop-blur-sm flex items-center justify-center z-50">
       <div
-        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-sm  p-4 translate-all duration-500"
+        className="w-full max-w-lg md:max-w-3xl lg:max-w-4xl p-4 rounded-sm shadow-lg relative transition-all duration-500"
         ref={ref as React.RefObject<HTMLDivElement>}
       >
         <button
